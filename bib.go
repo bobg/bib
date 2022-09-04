@@ -31,32 +31,17 @@ func Sort(strs []string) {
 	// but that would call Key on each string in strs more than once, on average,
 	// which is inefficient.
 	// So instead we compute keys for all the strings exactly once into a new slice,
-	// then pair that up with the input slice,
-	// sorting the already-transformed slice
-	// and mirroring the swaps in the untransformed slice.
+	// then use a slices.KeyedSorter.
 
 	keys := make([]string, 0, len(strs))
 	for _, s := range strs {
 		keys = append(keys, Key(s))
 	}
-
-	sort.Sort(paired{keys: keys, orig: strs})
-}
-
-// Paired allows sorting of `orig`
-// according to a plain string sort of `keys`,
-// whose elements are paired 1:1 with `orig`.
-type paired struct {
-	keys, orig []string
-}
-
-var _ sort.Interface = paired{}
-
-func (p paired) Len() int           { return len(p.orig) }
-func (p paired) Less(i, j int) bool { return p.keys[i] < p.keys[j] }
-func (p paired) Swap(i, j int) {
-	p.keys[i], p.keys[j] = p.keys[j], p.keys[i]
-	p.orig[i], p.orig[j] = p.orig[j], p.orig[i]
+	ks := slices.KeyedSorter[string]{
+		Keys:  sort.StringSlice(keys),
+		Slice: strs,
+	}
+	sort.Sort(ks)
 }
 
 // Key converts an input string to a bibliographic sort key.
