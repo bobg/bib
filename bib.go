@@ -31,17 +31,13 @@ func Sort(strs []string) {
 	// but that would call Key on each string in strs more than once, on average,
 	// which is inefficient.
 	// So instead we compute keys for all the strings exactly once into a new slice,
-	// then use a slices.KeyedSorter.
+	// then use slices.KeyedSort.
 
 	keys := make([]string, 0, len(strs))
 	for _, s := range strs {
 		keys = append(keys, Key(s))
 	}
-	ks := slices.KeyedSorter[string]{
-		Keys:  sort.StringSlice(keys),
-		Slice: strs,
-	}
-	sort.Sort(ks)
+	slices.KeyedSort(strs, sort.StringSlice(keys))
 }
 
 // Key converts an input string to a bibliographic sort key.
