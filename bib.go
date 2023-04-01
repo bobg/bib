@@ -14,7 +14,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/bobg/go-generics/slices"
+	"github.com/bobg/go-generics/v2/slices"
 )
 
 // Less tells whether a comes before b in a bibliograhic sort.
@@ -33,10 +33,7 @@ func Sort(strs []string) {
 	// So instead we compute keys for all the strings exactly once into a new slice,
 	// then use slices.KeyedSort.
 
-	keys := make([]string, 0, len(strs))
-	for _, s := range strs {
-		keys = append(keys, Key(s))
-	}
+	keys := slices.Map(strs, Key)
 	slices.KeyedSort(strs, sort.StringSlice(keys))
 }
 
