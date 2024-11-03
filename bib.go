@@ -14,7 +14,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/bobg/go-generics/v2/slices"
+	"github.com/bobg/go-generics/v4/slices"
 )
 
 // Less tells whether a comes before b in a bibliograhic sort.
