@@ -38,24 +38,12 @@ func Sort(strs []string) {
 }
 
 // Key converts an input string to a bibliographic sort key.
-//
-// TODO: Handle Unicode character categories.
-// E.g. don't convert only "-" to a space,
-// convert everything in the "dash punctuation" category
-// (https://www.compart.com/en/unicode/category/Pd).
 func Key(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ToLower(s)
 	s = strings.ReplaceAll(s, "&", " and ")
-	s = strings.ReplaceAll(s, "-", " ")
-
-	// Keep only letters, digits, and whitespace.
-	s = strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsNumber(r) || unicode.IsSpace(r) {
-			return r
-		}
-		return -1
-	}, s)
+	s = strings.Map(dashToSpace, s)
+	s = strings.Map(keepLettersDigitsWhitespace, s)
 
 	f := strings.Fields(s)
 	switch f[0] {
@@ -74,6 +62,20 @@ func Key(s string) string {
 	}
 
 	return strings.Join(f, " ")
+}
+
+func dashToSpace(r rune) rune {
+	if unicode.In(r, unicode.Pd) {
+		return ' '
+	}
+	return r
+}
+
+func keepLettersDigitsWhitespace(r rune) rune {
+	if unicode.IsLetter(r) || unicode.IsNumber(r) || unicode.IsSpace(r) {
+		return r
+	}
+	return -1
 }
 
 var numRegex = regexp.MustCompile(`^(\d+)(st|nd|rd|th)?$`)
